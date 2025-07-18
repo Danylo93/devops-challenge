@@ -1,0 +1,43 @@
+trigger:
+- main
+
+variables:
+  azureSubscription: '<NOME_DO_SERVICE_CONNECTION>'
+  acrName: 'acrdevopschallenge'
+  acrLoginServer: 'acrdevopschallenge.azurecr.io'
+  imageName: 'devops-app'
+
+stages:
+- stage: Build
+  jobs:
+  - job: BuildAndPush
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - task: Docker@2
+      inputs:
+        containerRegistry: '$(azureSubscription)'
+        repository: '$(imageName)'
+        command: 'buildAndPush'
+        Dockerfile: 'app/Dockerfile'
+        tags: 'latest'
+
+- stage: Deploy
+  jobs:
+  - job: HelmDeploy
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - task: Kubernetes@1
+      inputs:
+        connectionType: 'Azure Resource Manager'
+        azureSubscription: '$(azureSubscription)'
+        azureResourceGroup: 'rg-devops'
+        kubernetesCluster: 'aksdevopschallenge'
+        command: 'apply'
+        useHelmChart: true
+        chartType: 'FilePath'
+        chartPath: 'helm'
+        overrideValues: |
+          image.repository=$(acrLoginServer)/$(imageName)
+          image.tag=latest

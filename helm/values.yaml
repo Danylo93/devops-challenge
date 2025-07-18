@@ -1,0 +1,27 @@
+replicaCount: 2
+
+image:
+  repository: acrdevopschallenge.azurecr.io/devops-app
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: LoadBalancer
+  port: 80
+
+resources:
+  limits:
+    cpu: 200m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+env:
+  CUSTOM_MESSAGE: "Deploy via Helm + Azure DevOps"
+
+config:
+  MESSAGE: "Hello from ConfigMap"
+
+secret:
+  PASSWORD: "YWRtaW4xMjM=" # base64(admin123)
