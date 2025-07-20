@@ -17,7 +17,10 @@ stages:
   jobs:
     - job: DockerBuildPush
       pool:
-        vmImage: 'ubuntu-latest'
+        name: Default
+        demands:
+          - agent.os -equals Linux
+
       steps:
         - task: Docker@2
           displayName: 📦 Build e Push da imagem
