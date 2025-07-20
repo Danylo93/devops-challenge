@@ -3,7 +3,7 @@ variable "resource_group_name" {
 }
 
 variable "location" {
-  default = "East US"
+  default = "eastus"
 }
 
 variable "acr_name" {
@@ -13,3 +13,8 @@ variable "acr_name" {
 variable "aks_name" {
   default = "aksdevopschallenge"
 }
+
+variable "subscription_id" {}
+variable "client_id" {}
+variable "client_secret" {}
+variable "tenant_id" {}

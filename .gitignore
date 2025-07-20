@@ -1,0 +1,67 @@
+# Node.js
+node_modules/
+.next/
+out/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Next.js build
+*.log
+build/
+dist/
+
+# Editor
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+*.tar
+*.container
+docker-compose.override.yml
+
+# Terraform
+terraform/.terraform/
+terraform/.terraform.lock.hcl
+terraform/tfplan
+terraform/*.tfstate
+terraform/*.tfstate.backup
+
+# Helm
+helm/charts/
+helm/tmp/
+helm/output.yaml
+helm/rendered/
+
+# CI/CD
+*.swp
+*.bak
+*.tmp
+*.log
+
+# Logs
+logs/
+*.log
+
+# Mac/Linux
+*.DS_Store
+*.log
+*.pid
+
+# Windows
+*.exe
+*.dll
+*.cmd
+*.ps1
+
+# Ignore local test script outputs
+testando_fluxo.sh

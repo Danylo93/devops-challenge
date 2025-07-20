@@ -1,43 +1,74 @@
 trigger:
-- main
+  - main
 
 variables:
-  azureSubscription: '<NOME_DO_SERVICE_CONNECTION>'
-  acrName: 'acrdevopschallenge'
-  acrLoginServer: 'acrdevopschallenge.azurecr.io'
   imageName: 'devops-app'
+  imageTag: 'v1'
+  acrName: 'acrdevopschallenge'
+  acrLoginServer: '$(acrName).azurecr.io'
+  azureSubscription: 'devops-challenge'
+  aksClusterName: 'aksdevopschallenge'
+  aksResourceGroup: 'rg-devops'
 
 stages:
+
 - stage: Build
+  displayName: 🐳 Build e Push Docker
   jobs:
-  - job: BuildAndPush
-    pool:
-      vmImage: 'ubuntu-latest'
-    steps:
-    - task: Docker@2
-      inputs:
-        containerRegistry: '$(azureSubscription)'
-        repository: '$(imageName)'
-        command: 'buildAndPush'
-        Dockerfile: 'app/Dockerfile'
-        tags: 'latest'
+    - job: DockerBuildPush
+      pool:
+        vmImage: 'ubuntu-latest'
+      steps:
+        - task: Docker@2
+          displayName: 📦 Build e Push da imagem
+          inputs:
+            containerRegistry: '$(azureSubscription)'
+            repository: '$(imageName)'
+            command: 'buildAndPush'
+            Dockerfile: 'app/Dockerfile'
+            tags: |
+              $(imageTag)
+
+- stage: Terraform
+  displayName: 🌍 Terraform Infra
+  jobs:
+    - job: TerraformValidatePlan
+      pool:
+        vmImage: 'ubuntu-latest'
+      steps:
+        - task: AzureCLI@2
+          displayName: 🔐 Login Azure + Terraform
+          inputs:
+            azureSubscription: '$(azureSubscription)'
+            scriptType: 'bash'
+            scriptLocation: 'inlineScript'
+            inlineScript: |
+              cd terraform
+              terraform init -upgrade -input=false
+              terraform validate
+              terraform plan -out=tfplan
 
 - stage: Deploy
+  displayName: 🚀 Deploy no AKS com Helm
+  dependsOn: [Build, Terraform]
   jobs:
-  - job: HelmDeploy
-    pool:
-      vmImage: 'ubuntu-latest'
-    steps:
-    - task: Kubernetes@1
-      inputs:
-        connectionType: 'Azure Resource Manager'
-        azureSubscription: '$(azureSubscription)'
-        azureResourceGroup: 'rg-devops'
-        kubernetesCluster: 'aksdevopschallenge'
-        command: 'apply'
-        useHelmChart: true
-        chartType: 'FilePath'
-        chartPath: 'helm'
-        overrideValues: |
-          image.repository=$(acrLoginServer)/$(imageName)
-          image.tag=latest
+    - job: HelmDeploy
+      pool:
+        vmImage: 'ubuntu-latest'
+      steps:
+        - task: HelmInstaller@1
+          inputs:
+            helmVersionToInstall: 'latest'
+
+        - task: AzureCLI@2
+          displayName: 📤 Deploy Helm Chart
+          inputs:
+            azureSubscription: '$(azureSubscription)'
+            scriptType: 'bash'
+            scriptLocation: 'inlineScript'
+            inlineScript: |
+              az aks get-credentials --resource-group $(aksResourceGroup) --name $(aksClusterName)
+              helm upgrade --install $(imageName) helm \
+                --set image.repository=$(acrLoginServer)/$(imageName) \
+                --set image.tag=$(imageTag) \
+                --set image.pullPolicy=Always
