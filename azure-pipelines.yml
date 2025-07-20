@@ -37,7 +37,9 @@ stages:
   jobs:
     - job: TerraformValidatePlan
       pool:
-        vmImage: 'ubuntu-latest'
+        name: Default
+        demands:
+          - agent.os -equals Linux
       steps:
         - task: AzureCLI@2
           displayName: 🔐 Login Azure + Terraform
@@ -57,7 +59,9 @@ stages:
   jobs:
     - job: HelmDeploy
       pool:
-        vmImage: 'ubuntu-latest'
+        name: Default
+        demands:
+          - agent.os -equals Linux
       steps:
         - task: HelmInstaller@1
           inputs:
