@@ -22,7 +22,7 @@ stages:
         - task: Docker@2
           displayName: 📦 Build e Push da imagem
           inputs:
-            containerRegistry: '$(azureSubscription)'
+            containerRegistry: 'acr-devops-connection'
             repository: '$(imageName)'
             command: 'buildAndPush'
             Dockerfile: 'app/Dockerfile'
