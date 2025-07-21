@@ -1,3 +1,4 @@
+# Template do objeto Service, expõe o app internamente ou externamente no cluster.
 apiVersion: v1
 kind: Service
 metadata:

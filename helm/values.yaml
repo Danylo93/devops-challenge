@@ -1,3 +1,4 @@
+# Define os valores padrão para os templates (imagem, tag, porta, etc.).
 replicaCount: 2
 
 image:

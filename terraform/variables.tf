@@ -1,3 +1,4 @@
+# Define variáveis reutilizáveis
 variable "resource_group_name" {
   default = "rg-devops"
 }

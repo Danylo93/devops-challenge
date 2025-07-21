@@ -1,3 +1,4 @@
+# Define o metadado do Helm Chart (nome, versão, etc.).
 apiVersion: v2
 name: devops-app
 description: Helm chart for simple Nginx app

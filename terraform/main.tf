@@ -1,3 +1,4 @@
+# Arquivo principal de provisionamento. Cria recursos como o Resource Group, AKS e ACR.
 provider "azurerm" {
   features {
     resource_group {

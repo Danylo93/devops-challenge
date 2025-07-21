@@ -1,3 +1,4 @@
+# Template do objeto Deployment, que define como o app será executado no cluster (réplicas, imagem, portas, liveness/readiness).
 apiVersion: apps/v1
 kind: Deployment
 metadata:
